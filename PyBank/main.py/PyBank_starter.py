@@ -6,7 +6,7 @@ import csv # Import the csv module
 import os # Used for file path manipulation (os.path.join)
 
 # Files to load and output (update with correct file paths)
-file_to_load = os.path.join("C:/path/to/your/Resource/budget_datacsv")  # Input file path. Should contain your financial data.
+file_to_load = os.path.join("Resources", "budget_data.csv")  # Input file path. Should contain your financial data.
 file_to_output = os.path.join("analysis", "budget_analysis.txt")  # Output file path. Will store the analysis results.
 
 # Define variables to track the financial data
@@ -17,7 +17,7 @@ total_net = 0 # Tracks the net total amount of "Profit/Losses" over the entire p
 previos_net = 0 # Tracks the previous month's profit/loss for calculating changes
 changes = [] # Tracks the monthly changes in profit/loss between months
 greatest_increase = ["", 0] #Tracks the the amount of the greatest increase in profit
-greatest_decrease = ["", 0] #Tracks the the amount of the greatest decrease in profits
+greatest_decrease = ["", 999999999999999] #Tracks the the amount of the greatest decrease in profits
 
 # Open and read the csv
 with open(file_to_load) as budget_data: # Open the file
@@ -32,10 +32,10 @@ with open(file_to_load) as budget_data: # Open the file
     total_net += int(first_row[1]) # Track the total net change
     previous_net = int(first_row[1]) # Track the previous net change
 
-    # Track the total and net change
-    for row in reader: # Process each row of data
-        date = row[0] # Extract the date from the row
-        net = int(row[1]) # Extract the profit/loss from the row
+    # # Track the total and net change
+    # for row in reader: # Process each row of data
+    #     date = row[0] # Extract the date from the row
+    #     net = int(row[1]) # Extract the profit/loss from the row
 
     # Process each row of data
     for row in reader: # Process each row of data
@@ -49,24 +49,33 @@ with open(file_to_load) as budget_data: # Open the file
         # Track the net change
         net_change = net - previous_net # Calculate the net change
         previous_net = net # Track the previous net change
+        # print(net_change) # Print the net change
         changes.append(net_change) # Append the net change to the changes list
 
         # Calculate the greatest increase in profits (month and amount)
         if net_change > greatest_increase[1]: # Check if the net change is greater than the current greatest increase
-            greatest_increase[date, net_change] # Update the greatest increase
+            greatest_increase[0]= date # Update the greatest increase
+            greatest_increase[1]= net_change
 
 
         # Calculate the greatest decrease in losses (month and amount)
         if net_change < greatest_decrease[1]: # Check if the net change is less than the current greatest decrease
-            greatest_decrease[date, net_change] # Update the greatest decrease
+            greatest_decrease[0]= date # Update the greatest decrease
+            greatest_decrease[1]= net_change
 
 
 # Calculate the average net change across the months
 average_change = sum(changes) / len(changes) # Calculate the average net change
 
 # Generate the output summary
-output = ( 
-
+output = (
+    f"\nFinancial Analysis\n" # Output the financial analysis
+    f"----------------------------\n" # Output the financial analysis
+    f"Total Months: {total_months}\n" # Output the total number of months
+    f"Total: ${total_net}\n" # Output the total net change
+    f"Average  Change: ${average_change:.2f}\n" # Output the average net change
+    f"Greatest Increase in Profits: {greatest_increase[0]} (${greatest_increase[1]})\n" # Output the greatest increase in profits
+    f"Greatest Decrease in Profits: {greatest_decrease[0]} (${greatest_decrease[1]})\n" # Output the greatest decrease in profits
 )
 
 # Print the output
